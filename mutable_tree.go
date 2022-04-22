@@ -68,6 +68,10 @@ func (tree *MutableTree) IsEmpty() bool {
 	return tree.ImmutableTree.Size() == 0
 }
 
+func (tree *MutableTree) GetOrphans() map[string]int64 {
+	return tree.orphans
+}
+
 // VersionExists returns whether or not a version exists.
 func (tree *MutableTree) VersionExists(version int64) bool {
 	tree.mtx.Lock()
@@ -1004,12 +1008,14 @@ func (tree *MutableTree) balance(node *Node, orphans *[]*Node) (newSelf *Node) {
 func (tree *MutableTree) addOrphans(orphans []*Node) {
 	for _, node := range orphans {
 		if !node.persisted {
+			fmt.Println("orphan node is not peresisted:", node.key, node.version)
 			// We don't need to orphan nodes that were never persisted.
 			continue
 		}
 		if len(node.hash) == 0 {
 			panic("Expected to find node hash, but was empty")
 		}
+		fmt.Println("orphan node is peresisted:", node.key, node.version)
 		tree.orphans[string(node.hash)] = node.version
 	}
 }

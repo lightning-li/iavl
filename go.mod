@@ -1,4 +1,4 @@
-module github.com/cosmos/iavl
+module github.com/lightning-li/iavl
 
 go 1.17
 
